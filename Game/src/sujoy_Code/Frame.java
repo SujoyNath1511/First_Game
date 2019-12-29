@@ -35,6 +35,7 @@ public class Frame extends JFrame{
 		canvas.setMaximumSize(new Dimension(WINDOW_WIDTH,WINDOW_HEIGHT));
 		canvas.setMinimumSize(new Dimension(WINDOW_WIDTH,WINDOW_HEIGHT));
 		canvas.setFocusable(false);		//turns the focus away from canvas and onto the Jframe (required for keyListener)
+		canvas.setBackground(Color.CYAN);
 		
 		this.add(canvas); //add canvas component to the window
 		this.pack();   //basically compiles or resizes the canvas to fit the window.

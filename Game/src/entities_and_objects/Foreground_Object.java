@@ -9,7 +9,7 @@ import sujoy_Code.Camera;
 public class Foreground_Object extends Entities {
 	private Camera camera;
 	private int id;
-	public static final Color[] COLOR_ARRAY = {Color.GREEN, Color.BLACK, Color.YELLOW, Color.BLUE, Color.ORANGE};
+	public static final Color[] COLOR_ARRAY = {Color.GREEN, Color.BLACK, Color.YELLOW, Color.RED, Color.ORANGE};
 	public Foreground_Object(boolean interactable, int x, int y, int width, int height, Camera camera, int id) {
 		super(interactable, x, y, width, height);
 		this.camera = camera;

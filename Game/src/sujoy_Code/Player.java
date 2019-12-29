@@ -5,6 +5,8 @@ package sujoy_Code;
  * Description: This is the Player class that stores all the player controls, sprites, and stats. 
  */
 
+import java.awt.Color;
+import java.awt.Font;
 //All imports are below
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -17,6 +19,8 @@ import sprites.SpriteSheet;
 import worlds.World1;
 
 public class Player implements KeyListener{		//keyListener added in the Game Class
+	public static final int PLAYER_HEIGHT = 64;
+	public static final int PLAYER_WIDTH = 32;
 	public static int GRAVITY = 1;
 	private int x;			//player x location
 	private int y;			// player y location
@@ -52,7 +56,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		stand = ImageLoader.loadImage("/textures/skeleton_stand.png");		//load the image that will be used when the player isn't moving
 		this.tempImg = sheet;		
 		x = 0;		//player's starting x coordinate
-		y = 800;		//player's starting y coordinate
+		y = 400;		//player's starting y coordinate
 		health = 100;	//health (subject to change)
 		damage = 20;		//initial damage (subject to change)
 		speed = 5;			//initial horizontal movement velocity
@@ -136,6 +140,9 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		case KeyEvent.VK_SPACE:
 			keys[4] = true;
 			break;
+		case KeyEvent.VK_J:
+			System.out.println(getX() + "," + getY());
+			break;
 		}	
 	}
 	
@@ -170,6 +177,8 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	 * Description: Updates player's x and y location
 	 */
 	public void movement () {
+		y += yVel;
+		yVel += GRAVITY;
 		if (keys[1] == true) {
 			if (keys[4] == true) {
 				x -= teleport_x;
@@ -194,12 +203,10 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		else if (x > World1.WORLD_WIDTH) {
 			x = World1.WORLD_WIDTH;
 		}
-		y += yVel;
-		yVel += GRAVITY;
 		if (y < 0)
 			y = 0;
-		else if (y > Frame.WINDOW_HEIGHT) {
-			y = Frame.WINDOW_HEIGHT;
+		else if (y + PLAYER_HEIGHT > Frame.WINDOW_HEIGHT) {
+			y = Frame.WINDOW_HEIGHT - PLAYER_HEIGHT;
 		}
 	}
 	public void tick() {
@@ -213,7 +220,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	 * Description: This method returns a rectangle the same size as the player image in order to run collision detection.
 	 */
 	public Rectangle getBounds() {
-		return new Rectangle (x,y,32,64);
+		return new Rectangle (x,y,PLAYER_WIDTH,PLAYER_HEIGHT);
 	}
 	public void setFalling() {
 		falling = true;
@@ -241,6 +248,11 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	 * Description: This method renders(draws the player) onto the buffer and uses animation
 	 */
 	public void render(Graphics g) {
+		g.setColor(Color.RED);
+		g.fillRect(10, 10,(int)(health * 5), 25);
+		g.setColor(Color.black);
+		g.setFont(new Font("arial", Font.BOLD, 16));
+		g.drawString("Health: " + Integer.toString(health), 20, 28);
 		if (walking == 2) {			//if walking is 2 (moving right)
 			g.drawImage(walk[frameCounter], x + camera.getXOffset(), y + camera.getYOffset(), null);	//draw the sprite on the screen, based on which part of the walking animation is
 															//currently playing
