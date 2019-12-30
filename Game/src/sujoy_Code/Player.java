@@ -19,7 +19,7 @@ import sprites.SpriteSheet;
 import worlds.World1;
 
 public class Player implements KeyListener{		//keyListener added in the Game Class
-	public static final int PLAYER_HEIGHT = 64;
+	public static final int PLAYER_HEIGHT = 60;
 	public static final int PLAYER_WIDTH = 32;
 	public static int GRAVITY = 1;
 	private int x;			//player x location
@@ -121,7 +121,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		int	key = e.getKeyCode();		//gets which key is pressed
 		switch (key) {				// a switch case to see which key is being pressed
 		case KeyEvent.VK_W:
-			keys[0] = true;		
+			//keys[0] = true;
 			if (falling == false) {		// if W was pressed, set jump to -10 (go up) and set jumped to true. Also get the last known y coordinate
 				yVel = -20;			//before jumping (temporary solution to jumping. Will be improved with collision detection later)
 				falling = true;	//also it makes it so that the player doesn't keep going up while pressing w.
@@ -203,11 +203,6 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		else if (x > World1.WORLD_WIDTH) {
 			x = World1.WORLD_WIDTH;
 		}
-		if (y < 0)
-			y = 0;
-		else if (y + PLAYER_HEIGHT > Frame.WINDOW_HEIGHT) {
-			y = Frame.WINDOW_HEIGHT - PLAYER_HEIGHT;
-		}
 	}
 	public void tick() {
 		movement();
@@ -225,6 +220,9 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	public void setFalling() {
 		falling = true;
 	}
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
 	public boolean freefall(Foreground_Object tempObj, int type) {
 		Rectangle tempRec = tempObj.getBounds();
 		
@@ -234,11 +232,26 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 				return false;
 			}
 			else {
+				//if ((y + PLAYER_HEIGHT) > tempObj.getY())
 				falling = false;
 				yVel = 0;
-				keys[0] = false;
+				//keys[0] = false;
+				y = tempRec.y - PLAYER_HEIGHT + 1;
 				return true;
 			}
+		}
+		return false;
+	}
+	public boolean hitWall(Foreground_Object tempObj) {
+		Rectangle tempRec = tempObj.getBounds();
+		if (getBounds().intersects(tempRec)){
+			if (x + PLAYER_WIDTH >= tempRec.x && x < tempRec.x) {
+				x = tempRec.x - PLAYER_WIDTH;
+			}
+			else if (x <= tempRec.x + tempRec.width){
+				x = tempRec.x + tempRec.width;
+			}
+			return true;
 		}
 		return false;
 	}

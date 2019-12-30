@@ -19,9 +19,10 @@ public class Handler {
 	}
 	public void tick() {
 		boolean tempVar;
+		boolean tempVar2;
 		player.tick();
 		for (int i = 0; i < objects[0].length; i++) {
-			if (objects[0][i] != null) {
+			if (objects[0][i] != null && Math.abs(objects[0][i].getX() - player.getX()) <= objects[0][i].getWidth()) {
 				if (player.getY() > objects[0][i].getY()) {
 					tempVar = player.freefall(objects[0][i], 1);
 				}
@@ -34,6 +35,19 @@ public class Handler {
 				else {
 					break;
 				}
+			}
+		}
+		
+		for (int j = 0; j < objects[1].length; j++) {
+			if (objects[1][j] != null) {
+				tempVar2 = player.hitWall(objects[1][j]);
+				if (tempVar2 == true) {
+					//player.setSpeed(5);
+					break;
+				}/*
+				else {
+					player.setSpeed(5);
+				}*/
 			}
 		}
 	}

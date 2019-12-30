@@ -30,7 +30,7 @@ public class World1 {
 		objects[0][6] = new Foreground_Object(true, 1500, 600, 300, 55,camera,0);
 		objects[0][7] = new Foreground_Object(true, 2200, 680, 220, 120,camera,0);
 		objects[0][8] = new Foreground_Object(true, 2465, 550, 180, 270,camera,0);
-		objects[0][9] = new Foreground_Object(true, 2760, 435, 300, 50,camera,0);	
+		objects[0][9] = new Foreground_Object(true, 2710, 435, 350, 50,camera,0);	
 		objects[0][10] = new Foreground_Object(true, 2905, 610, 400, 50,camera,0);
 		objects[0][11] = new Foreground_Object(true, 3900, 800, 500, 300, camera, 0);
 		objects[0][12] = new Foreground_Object(true, 4115, 590, 380, 70, camera, 0);
@@ -43,7 +43,9 @@ public class World1 {
 		objects[0][19] = new Foreground_Object(true, 5480, 390, 225, 10, camera, 0);
 		objects[0][20] = new Foreground_Object(true, 5652, 200, 1030, 60, camera, 0);
 		objects[0][21] = new Foreground_Object(true, 5652, 80, 1030, 55, camera, 0);
-		objects[0][22] = new Foreground_Object(true, 6750, 800, 3000, 280,camera,0);
+		objects[0][22] = new Foreground_Object(true, 6750, 800, 1800, 280,camera,0);
+		objects[0][23] = new Foreground_Object(true, 1780, 290, 40, 10, camera, 0);
+		objects [0][24] = new Foreground_Object(true, 1780, 200, 40, 10, camera, 0);
 		
 		
 		
@@ -54,7 +56,7 @@ public class World1 {
 		objects[1][0] = new Foreground_Object(true, 1100, 0, 40, 740, camera, 1);
 		objects[1][1] = new Foreground_Object(true, 1780, 0, 40, 200, camera, 1);
 		objects[1][2] = new Foreground_Object(true, 1780, 300, 40, 500, camera, 1);
-		objects[1][3] = new Foreground_Object(true, 2710, 435, 50, 365, camera, 1);
+		objects[1][3] = new Foreground_Object(true, 2710, 485, 50, 315, camera, 1);
 		objects[1][4] = new Foreground_Object(true, 3305, 0, 50, 730, camera, 1);
 		objects[1][5] = new Foreground_Object(true, 5430, 0, 50, 750, camera, 1);
 		objects[1][6] = new Foreground_Object(true, 5430, 880, 50, 200, camera, 1);

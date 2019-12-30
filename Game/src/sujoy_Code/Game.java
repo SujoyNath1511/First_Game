@@ -97,7 +97,7 @@ public class Game implements Runnable{		//runnable lets me use threads
 				timer -= tickRate;	//reset timer to 1 less than current (resetting it to 0 causes problems due to other code running)
 			}
 			if (timer_checker >= 1000000000) {	//print fps every second
-				System.out.println("FPS: " + ticks); 
+				//System.out.println("FPS: " + ticks); 
 				timer_checker = 0;
 				ticks = 0;
 			}
