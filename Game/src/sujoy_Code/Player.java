@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage;
 
 import entities_and_objects.Foreground_Object;
 import sprites.SpriteSheet;
-import worlds.World1;
+import worlds.World;
 
 public class Player implements KeyListener{		//keyListener added in the Game Class
 	public static final int PLAYER_HEIGHT = 60;
@@ -29,7 +29,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	private boolean falling;		
 	private int speed;			//player's speed
 	private int teleport_x;			//teleport distance in the x (needs more work)
-	private int teleport_y;			//teleport distance in the y (needs more work)	
+	private long teleport_bar;			//teleport distance in the y (needs more work)	
 	private BufferedImage stand;	//image of the skeleton standing
 	private BufferedImage[] walk;	//array for when the skeleton moves (animation)
 	private SpriteSheet tempImg;	//temporary storage of the full spritesheet (a spritesheet object)
@@ -39,6 +39,9 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	private boolean[] keys;
 	private int yVel;
 	private Camera camera;
+	private World world;
+	private long timePressed;
+	private long now;
 	
 	
 	/*
@@ -46,7 +49,8 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	 * post: Almost all variables have been initialized
 	 * Description: Initializes all variables and objects
 	 */
-	public Player(SpriteSheet sheet, Camera camera) {
+	public Player(SpriteSheet sheet, Camera camera, World world) {
+		this.world = world;
 		this.camera = camera;
 		falling = true;					//player didn't already jump
 		frameCounter = 0;				//set to 0 (first frame)
@@ -71,6 +75,8 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			walk[i] = tempImg.crop(i * 64, 11 * 64, 64, 64);
 			walk[i + 9] = tempImg.crop(i * 64, 9 * 64, 64, 64);
 		}
+		now = 0;
+		teleport_bar = 0;
 	}
 	
 	/*
@@ -138,7 +144,12 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			walking = 2;
 			break;
 		case KeyEvent.VK_SPACE:
-			keys[4] = true;
+			timePressed = System.currentTimeMillis();
+			if (timePressed - now >= 5000) {
+				keys[4] = true;
+				now = timePressed;
+				teleport_bar = 0;
+			}
 			break;
 		case KeyEvent.VK_J:
 			System.out.println(getX() + "," + getY());
@@ -177,11 +188,15 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	 * Description: Updates player's x and y location
 	 */
 	public void movement () {
+		int tempX = x;
 		y += yVel;
 		yVel += GRAVITY;
 		if (keys[1] == true) {
 			if (keys[4] == true) {
 				x -= teleport_x;
+				if (tempX > (world.getWorldWidth() - Frame.WINDOW_WIDTH) && x <= 9260 ) {
+					x = 9261;
+				}
 				keys[4] = false;
 			}
 			else {
@@ -200,13 +215,20 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		if (x < 0) {
 			x = 0;
 		}
-		else if (x > World1.WORLD_WIDTH) {
-			x = World1.WORLD_WIDTH;
+		else if (x + PLAYER_WIDTH > world.getWorldWidth()) {
+			x = world.getWorldWidth() - PLAYER_WIDTH;
 		}
 	}
 	public void tick() {
+		teleport_bar = System.currentTimeMillis() - now;
+		if (teleport_bar >= 5000) {
+			teleport_bar = 5000;
+		}
 		movement();
-		if (x >= Frame.WINDOW_WIDTH/2) {
+		if (x >= (world.getWorldWidth() - Frame.WINDOW_WIDTH)) {
+			camera.setXOffset(-world.getWorldWidth() + Frame.WINDOW_WIDTH);
+		}
+		else if (x >= Frame.WINDOW_WIDTH/2) {
 			camera.center(this);
 		}
 	}
@@ -261,6 +283,8 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	 * Description: This method renders(draws the player) onto the buffer and uses animation
 	 */
 	public void render(Graphics g) {
+		g.setColor(Color.blue);
+		g.fillRect(10, 50,(int)(teleport_bar/10),25);
 		g.setColor(Color.RED);
 		g.fillRect(10, 10,(int)(health * 5), 25);
 		g.setColor(Color.black);

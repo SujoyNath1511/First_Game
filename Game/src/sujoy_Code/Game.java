@@ -7,10 +7,11 @@
 package sujoy_Code;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
 import sprites.SpriteSheet;
-import worlds.World1;
+import worlds.World;
 
 public class Game implements Runnable{		//runnable lets me use threads
 	private Frame window;		//the window/frame of the game
@@ -20,9 +21,10 @@ public class Game implements Runnable{		//runnable lets me use threads
 	private BufferStrategy buffer;		//buffers for drawing on and using
 	private SpriteSheet sheet;
 	private Graphics g;
+	private Graphics2D g2d;
 	private Handler handler;
 	private Camera camera;
-	private World1 world1;
+	private World world1;
 	
 	public Game() {
 		isRunning = false;	//this boolean value is to check to see if the game is already running or not. At the beginning, we set it to false
@@ -36,9 +38,9 @@ public class Game implements Runnable{		//runnable lets me use threads
 		window = new Frame();
 		camera = new Camera();
 		sheet = new SpriteSheet(ImageLoader.loadImage("/textures/skeleton.png"));	//use image loader to get a sprite sheet and put it into sheet
-		player = new Player(sheet, camera);
+		world1 = new World(camera, "resources/levels/world_1.txt");
+		player = new Player(sheet, camera, world1);
 		window.getFrame().addKeyListener(player);		//add a keylistener to player
-		world1 = new World1(camera);
 		handler = new Handler(camera, world1, player);
 	}
 	
@@ -62,6 +64,7 @@ public class Game implements Runnable{		//runnable lets me use threads
 			return;				//end the method
 		}
 		g = buffer.getDrawGraphics();		//get the graphics object
+		g2d = (Graphics2D)buffer.getDrawGraphics();
 		
 		g.clearRect(0, 0, Frame.WINDOW_WIDTH, Frame.WINDOW_HEIGHT);	//clears the screen (makes a clear rectangle the size of the screen)
 		

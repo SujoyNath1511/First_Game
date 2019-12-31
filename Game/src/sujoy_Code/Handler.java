@@ -4,14 +4,14 @@ package sujoy_Code;
 import java.awt.Graphics;
 
 import entities_and_objects.Foreground_Object;
-import worlds.World1;
+import worlds.World;
 
 public class Handler {
 	private Camera camera;
-	private World1 world1;
+	private World world1;
 	private Player player;
 	private Foreground_Object[][] objects;
-	public Handler(Camera camera, World1 world, Player player) {
+	public Handler(Camera camera, World world, Player player) {
 		this.camera = camera;
 		world1 = world;	
 		objects = world1.getObjects();
@@ -42,12 +42,8 @@ public class Handler {
 			if (objects[1][j] != null) {
 				tempVar2 = player.hitWall(objects[1][j]);
 				if (tempVar2 == true) {
-					//player.setSpeed(5);
 					break;
-				}/*
-				else {
-					player.setSpeed(5);
-				}*/
+				}
 			}
 		}
 	}

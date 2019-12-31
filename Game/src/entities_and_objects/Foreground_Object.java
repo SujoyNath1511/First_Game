@@ -43,5 +43,8 @@ public class Foreground_Object extends Entities {
 	public boolean getInteractable() {
 		return interactable;
 	}
+	public String toString() {
+		return Integer.toString(id);
+	}
 
 }
