@@ -41,6 +41,7 @@ public class Game implements Runnable{		//runnable lets me use threads
 		world1 = new World(camera, "resources/levels/world_1.txt");
 		player = new Player(sheet, camera, world1);
 		window.getFrame().addKeyListener(player);		//add a keylistener to player
+		window.getFrame().addMouseListener(player.getGun());
 		handler = new Handler(camera, world1, player);
 	}
 	

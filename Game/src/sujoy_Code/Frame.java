@@ -7,6 +7,8 @@
 //imports and packages
 package sujoy_Code;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+
 import javax.swing.*;
 
 @SuppressWarnings("serial")		//Blocks the serializable warning
@@ -14,6 +16,8 @@ public class Frame extends JFrame{
 	public static final int WINDOW_HEIGHT = 1080;	
 	public static final int WINDOW_WIDTH = 1920;
 	private Canvas canvas;		//create a canvas object
+	private Cursor cursor;
+	private BufferedImage crosshair;
 	public Frame() {
 		super("Game Window");		//make a JFrame
 		createFrame();			//call the createFrame method, made another method to keep the code organized.
@@ -36,8 +40,13 @@ public class Frame extends JFrame{
 		canvas.setMinimumSize(new Dimension(WINDOW_WIDTH,WINDOW_HEIGHT));
 		canvas.setFocusable(false);		//turns the focus away from canvas and onto the Jframe (required for keyListener)
 		canvas.setBackground(Color.CYAN);
-		
 		this.add(canvas); //add canvas component to the window
+		
+		crosshair = ImageLoader.loadImage("/textures/cursor.png");
+		
+		cursor = Toolkit.getDefaultToolkit().createCustomCursor(crosshair, new Point(0,0), null);
+		this.setCursor(cursor);
+		
 		this.pack();   //basically compiles or resizes the canvas to fit the window.
 	}
 	/*

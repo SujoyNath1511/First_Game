@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Font;
 //All imports are below
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,29 +20,30 @@ import sprites.SpriteSheet;
 import worlds.World;
 
 public class Player implements KeyListener{		//keyListener added in the Game Class
-	public static final int PLAYER_HEIGHT = 60;
-	public static final int PLAYER_WIDTH = 32;
+	public static final int PLAYER_HEIGHT = 64;
+	public static final int PLAYER_WIDTH = 64;
 	public static int GRAVITY = 1;
 	private int x;			//player x location
 	private int y;			// player y location
-	private int health;
+	private int health;		//player's health
 	private int damage;			//how much damage the player does
 	private boolean falling;		
 	private int speed;			//player's speed
 	private int teleport_x;			//teleport distance in the x (needs more work)
-	private long teleport_bar;			//teleport distance in the y (needs more work)	
+	private long teleport_bar;			//A variable that checks the current time with when the space bar has been last pressed.	
 	private BufferedImage stand;	//image of the skeleton standing
 	private BufferedImage[] walk;	//array for when the skeleton moves (animation)
 	private SpriteSheet tempImg;	//temporary storage of the full spritesheet (a spritesheet object)
 	private int walking;			//a int value to check to see if the player is moving left, right or not at all
 	private int frameCounter;		//a frameCounter to run moving right animation
-	private int frameCounter2;		//a frameCoutner to run moving left animation
-	private boolean[] keys;
-	private int yVel;
-	private Camera camera;
-	private World world;
-	private long timePressed;
+	//private int frameCounter2;		//a frameCoutner to run moving left animation
+	private boolean[] keys;		//an array to see which keys have been pressed
+	private int yVel;		//the y velocity of the player
+	private Camera camera;		//a camera object for movement
+	private World world;		//world object for the first world
+	private long timePressed;		//a long variable to check to see when 
 	private long now;
+	private Gun gun;
 	
 	
 	/*
@@ -52,12 +54,12 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	public Player(SpriteSheet sheet, Camera camera, World world) {
 		this.world = world;
 		this.camera = camera;
+		this.gun = new Gun(this, this.camera);
 		falling = true;					//player didn't already jump
 		frameCounter = 0;				//set to 0 (first frame)
-		frameCounter2 = 0;
-		walking = 0;
+		//frameCounter2 = 0;
+		walking = 2;
 		walk = new BufferedImage[18];		//has a size of 18 because walking in each direction has 9 images each, so in total 18
-		stand = ImageLoader.loadImage("/textures/skeleton_stand.png");		//load the image that will be used when the player isn't moving
 		this.tempImg = sheet;		
 		x = 0;		//player's starting x coordinate
 		y = 400;		//player's starting y coordinate
@@ -75,6 +77,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			walk[i] = tempImg.crop(i * 64, 11 * 64, 64, 64);
 			walk[i + 9] = tempImg.crop(i * 64, 9 * 64, 64, 64);
 		}
+		stand = walk[0];
 		now = 0;
 		teleport_bar = 0;
 	}
@@ -136,12 +139,10 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		case KeyEvent.VK_A:		//if a is pressed, set walking to 1 and speed to -2
 			keys[1] = true;
 			//speed = -5;
-			walking = 1;
 			break;
 		case KeyEvent.VK_D:		//if D is pressed, set walking to 2 and speed to 2
 			keys[3] = true;
 			//speed = 5;
-			walking = 2;
 			break;
 		case KeyEvent.VK_SPACE:
 			timePressed = System.currentTimeMillis();
@@ -152,7 +153,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			}
 			break;
 		case KeyEvent.VK_J:
-			System.out.println(getX() + "," + getY());
+			System.out.println(gun.getCursorX() + "," + gun.getCursorY());
 			break;
 		}	
 	}
@@ -167,11 +168,9 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		int key = e.getKeyCode();
 		if (key == KeyEvent.VK_A) {
 			keys[1] = false;
-			walking = 0;
 		}
 		else if (key == KeyEvent.VK_D) {
 			keys[3] = false;
-			walking = 0;
 		}
 		else if (key == KeyEvent.VK_SPACE) {
 			keys[4] = false;
@@ -182,6 +181,14 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			walking = 0;		//set walking to 0 (standing animation)
 		}*/
 	}
+	public Gun getGun() {
+		return gun;
+	}
+
+	public void setGun(Gun gun) {
+		this.gun = gun;
+	}
+
 	/*
 	 * pre: none
 	 * post: player's x and y have been updated
@@ -231,6 +238,16 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		else if (x >= Frame.WINDOW_WIDTH/2) {
 			camera.center(this);
 		}
+		if(keys[1] == false && keys[3] == false) {
+			frameCounter = 0;
+		}
+		if (x + PLAYER_WIDTH/2 >= gun.getCursorX()) {
+			walking = 1;
+		}
+		else {
+			walking = 2;
+		}
+		gun.tick();
 	}
 	/* pre: none
 	 * post: returns a rectangle the same size as the image
@@ -292,24 +309,22 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		g.drawString("Health: " + Integer.toString(health), 20, 28);
 		if (walking == 2) {			//if walking is 2 (moving right)
 			g.drawImage(walk[frameCounter], x + camera.getXOffset(), y + camera.getYOffset(), null);	//draw the sprite on the screen, based on which part of the walking animation is
-															//currently playing
-			frameCounter ++;			//increment frameCounter by 1
+			
+			//currently playing
+			//frameCounter ++;
+			/*//increment frameCounter by 1
 			if (frameCounter > 8) { //if frameCounter is greater than 8, reset it to 0 because there are only 9 images for walking animation
 				frameCounter = 0;
-			}
+			}*/
 		}
 		else if(walking == 1) {		//same as the one above, only except make sure frameCounter2 increments by 1 and adds 9 to get the second
 									//half of the BufferedImage array. The second half contains walking left images.
-			g.drawImage(walk[frameCounter2 + 9], x + camera.getXOffset(), y + camera.getYOffset(), null);
-			frameCounter2 ++;
-			if (frameCounter2 > 8) {
-				frameCounter2 = 0;
-			}
+			g.drawImage(walk[frameCounter + 9], x + camera.getXOffset(), y + camera.getYOffset(), null);
 		}
-		else {
-			g.drawImage(stand, x + camera.getXOffset(), y + camera.getYOffset(), null);		//if walking is 0 (because it isn't 1 or 2, reset frameCounter and frameCounter2
-			frameCounter = 0;					//draw the image of the player standing because they aren't moving left or right
-			frameCounter2 = 0;
+		frameCounter++;
+		if (frameCounter > 8) {
+			frameCounter = 0;
 		}
+		gun.render((Graphics2D) g);
 	}
 }

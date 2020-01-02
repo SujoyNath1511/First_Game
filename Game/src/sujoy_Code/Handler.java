@@ -50,5 +50,6 @@ public class Handler {
 	public void render(Graphics g) {
 		world1.render(g);
 		player.render(g);
+		
 	}
 }
