@@ -65,5 +65,4 @@ public class Frame extends JFrame{
 	public JFrame getFrame() {
 		return this;	//return the current object
 	}
-	
 }

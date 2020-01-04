@@ -20,7 +20,7 @@ import sprites.SpriteSheet;
 import worlds.World;
 
 public class Player implements KeyListener{		//keyListener added in the Game Class
-	public static final int PLAYER_HEIGHT = 64;
+	public static final int PLAYER_HEIGHT = 55;
 	public static final int PLAYER_WIDTH = 64;
 	public static int GRAVITY = 1;
 	private int x;			//player x location
@@ -31,19 +31,17 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	private int speed;			//player's speed
 	private int teleport_x;			//teleport distance in the x (needs more work)
 	private long teleport_bar;			//A variable that checks the current time with when the space bar has been last pressed.	
-	private BufferedImage stand;	//image of the skeleton standing
 	private BufferedImage[] walk;	//array for when the skeleton moves (animation)
 	private SpriteSheet tempImg;	//temporary storage of the full spritesheet (a spritesheet object)
 	private int walking;			//a int value to check to see if the player is moving left, right or not at all
 	private int frameCounter;		//a frameCounter to run moving right animation
-	//private int frameCounter2;		//a frameCoutner to run moving left animation
 	private boolean[] keys;		//an array to see which keys have been pressed
 	private int yVel;		//the y velocity of the player
 	private Camera camera;		//a camera object for movement
 	private World world;		//world object for the first world
 	private long timePressed;		//a long variable to check to see when 
 	private long now;
-	private Gun gun;
+	private Player_Gun gun;
 	
 	
 	/*
@@ -54,10 +52,9 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	public Player(SpriteSheet sheet, Camera camera, World world) {
 		this.world = world;
 		this.camera = camera;
-		this.gun = new Gun(this, this.camera);
+		this.gun = new Player_Gun(this.camera, ImageLoader.loadImage("/textures/laser_gun.png"),this,50, 24);
 		falling = true;					//player didn't already jump
 		frameCounter = 0;				//set to 0 (first frame)
-		//frameCounter2 = 0;
 		walking = 2;
 		walk = new BufferedImage[18];		//has a size of 18 because walking in each direction has 9 images each, so in total 18
 		this.tempImg = sheet;		
@@ -77,7 +74,6 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			walk[i] = tempImg.crop(i * 64, 11 * 64, 64, 64);
 			walk[i + 9] = tempImg.crop(i * 64, 9 * 64, 64, 64);
 		}
-		stand = walk[0];
 		now = 0;
 		teleport_bar = 0;
 	}
@@ -152,10 +148,14 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 				teleport_bar = 0;
 			}
 			break;
-		case KeyEvent.VK_J:
-			System.out.println(gun.getCursorX() + "," + gun.getCursorY());
+		case KeyEvent.VK_V:
+			gun.fire();
 			break;
-		}	
+		case KeyEvent.VK_P:
+			System.out.println("Position: " + x + ", " + y);
+			break;
+		}
+		
 	}
 	
 	/*
@@ -175,17 +175,13 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		else if (key == KeyEvent.VK_SPACE) {
 			keys[4] = false;
 		}
-		/*
-		if (key == KeyEvent.VK_A || key == KeyEvent.VK_D) {		//if either A or D have been released, set the speed to 0
-			speed = 0;
-			walking = 0;		//set walking to 0 (standing animation)
-		}*/
+		
 	}
-	public Gun getGun() {
+	public Player_Gun getGun() {
 		return gun;
 	}
 
-	public void setGun(Gun gun) {
+	public void setGun(Player_Gun gun) {
 		this.gun = gun;
 	}
 
@@ -228,7 +224,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	}
 	public void tick() {
 		teleport_bar = System.currentTimeMillis() - now;
-		if (teleport_bar >= 5000) {
+		if (teleport_bar > 5000) {
 			teleport_bar = 5000;
 		}
 		movement();
@@ -267,16 +263,31 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		
 		if (getBounds().intersects(tempRec) == true) {
 			if (type == 1) {
-				yVel = 2;
+				if (x + PLAYER_WIDTH > tempRec.x && y < tempRec.y + tempRec.height - 10 && x + PLAYER_WIDTH < tempRec.x + tempRec.width/2) {
+					x = tempRec.x - PLAYER_WIDTH;
+				}
+				else if(x + PLAYER_WIDTH > tempRec.x + tempRec.width/2 && y < tempRec.y + tempRec.height - 10) {
+					x = tempRec.x + tempRec.width;
+				}
+				else {
+					yVel = 2;
+				}
 				return false;
 			}
 			else {
-				//if ((y + PLAYER_HEIGHT) > tempObj.getY())
-				falling = false;
-				yVel = 0;
-				//keys[0] = false;
-				y = tempRec.y - PLAYER_HEIGHT + 1;
-				return true;
+				if (x + PLAYER_WIDTH > tempRec.x && y + PLAYER_HEIGHT > tempRec.y + 20 && x < tempRec.x + tempRec.width/2 && yVel < 20) {
+					x = tempRec.x - PLAYER_WIDTH;
+				}
+				else if(x > tempRec.x + tempRec.width/2 && y + PLAYER_HEIGHT > tempRec.y + 20 && yVel < 20) {
+					x = tempRec.x + tempRec.width;
+				}
+				else {
+					falling = false;
+					yVel = 0;
+					//keys[0] = false;
+					y = tempRec.y - PLAYER_HEIGHT + 1;
+					return true;
+				}
 			}
 		}
 		return false;

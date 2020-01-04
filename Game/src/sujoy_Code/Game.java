@@ -7,7 +7,6 @@
 package sujoy_Code;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
 import sprites.SpriteSheet;
@@ -21,7 +20,6 @@ public class Game implements Runnable{		//runnable lets me use threads
 	private BufferStrategy buffer;		//buffers for drawing on and using
 	private SpriteSheet sheet;
 	private Graphics g;
-	private Graphics2D g2d;
 	private Handler handler;
 	private Camera camera;
 	private World world1;
@@ -41,7 +39,7 @@ public class Game implements Runnable{		//runnable lets me use threads
 		world1 = new World(camera, "resources/levels/world_1.txt");
 		player = new Player(sheet, camera, world1);
 		window.getFrame().addKeyListener(player);		//add a keylistener to player
-		window.getFrame().addMouseListener(player.getGun());
+		//window.getFrame().addMouseListener(player.getGun());
 		handler = new Handler(camera, world1, player);
 	}
 	
@@ -64,8 +62,7 @@ public class Game implements Runnable{		//runnable lets me use threads
 			window.getCanvas().createBufferStrategy(3);			//if this is the first time, make 3 buffers (have no clue why 3 is the limit yet)
 			return;				//end the method
 		}
-		g = buffer.getDrawGraphics();		//get the graphics object
-		g2d = (Graphics2D)buffer.getDrawGraphics();
+		g = buffer.getDrawGraphics();
 		
 		g.clearRect(0, 0, Frame.WINDOW_WIDTH, Frame.WINDOW_HEIGHT);	//clears the screen (makes a clear rectangle the size of the screen)
 		
@@ -80,7 +77,7 @@ public class Game implements Runnable{		//runnable lets me use threads
 	 * Description: Basically runs the game. It calls all the main methods like init(), tick() and then render() to run the game.
 	 */
 	public void run() {
-		int fps = 60;	//the target frames per second
+		int fps = 120;	//the target frames per second
 		long time = System.nanoTime();	//get the current time in nanoseconds
 		double tickRate = 1000000000/ fps; //time to run the tick method once (1 second divided by 60)
 		double timer = 0;	//keeps track of when 1/60 of a second has passed
@@ -94,14 +91,15 @@ public class Game implements Runnable{		//runnable lets me use threads
 			timer += (now - time);	//subtract the time taken to reach this line of code(used to check when we reach 1/60 of a second)
 			timer_checker += now - time;		//keep track of that time
 			time = now;			//reset time to current time (this process is in nanoseconds so it doesn't matter too much)
+			tick();
+			render();
 			if (timer >= tickRate) {		//if we passed 1/60 of a second, run tick and render
-				tick();
-				render();
+				
 				ticks ++;	//add 1 to number of ticks
 				timer -= tickRate;	//reset timer to 1 less than current (resetting it to 0 causes problems due to other code running)
 			}
 			if (timer_checker >= 1000000000) {	//print fps every second
-				//System.out.println("FPS: " + ticks); 
+				System.out.println("FPS: " + ticks); 
 				timer_checker = 0;
 				ticks = 0;
 			}
