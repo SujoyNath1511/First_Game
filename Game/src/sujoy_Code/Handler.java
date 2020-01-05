@@ -12,7 +12,7 @@ public class Handler {
 	//private Camera camera;
 	private World world1;
 	private Player player;
-	private Foreground_Object[][] objects;
+	private Foreground_Object[] objects;
 	private ArrayList<Projectile> projectiles;
 	public Handler(Camera camera, World world, Player player) {
 		//this.camera = camera;
@@ -23,18 +23,13 @@ public class Handler {
 		
 	}
 	public void tick() {
-		boolean tempVar;
-		boolean tempVar2;
+		boolean tempVar = false;
+		boolean tempVar2 = false;
 		projectiles = player.getGun().getBullets();
 		for (int a = 0; a < projectiles.size(); a++) {
-			for (int b = 0; b < objects[0].length; b++) {
-				if (objects[0][b] != null && Math.abs(projectiles.get(a).getX() - objects[0][b].getX()) <= Frame.WINDOW_WIDTH) {
-					if (projectiles.get(a).collisionDetection(objects[0][b].getBounds()) == true) {
-						break;
-					}
-				}
-				if (objects[1][b] != null && Math.abs(projectiles.get(a).getX() - objects[0][b].getX()) <= Frame.WINDOW_WIDTH) {
-					if (projectiles.get(a).collisionDetection(objects[1][b].getBounds()) == true) {
+			for (int b = 0; b < objects.length; b++) {
+				if (objects[b].getId() != 2 && Math.abs(projectiles.get(a).getX() - objects[b].getX()) <= Frame.WINDOW_WIDTH) {
+					if (projectiles.get(a).collisionDetection(objects[b].getBounds()) == true) {
 						break;
 					}
 				}
@@ -48,29 +43,23 @@ public class Handler {
 			}
 		}
 		//System.out.println(projectiles.size());
-		for (int i = 0; i < objects[0].length; i++) {
-			if (objects[0][i] != null && Math.abs(objects[0][i].getX() - player.getX()) <= objects[0][i].getWidth()) {
-				if (player.getY() > objects[0][i].getY()) {
-					tempVar = player.freefall(objects[0][i], 1);
+		for (int i = 0; i < objects.length; i++) {
+			if (objects[i].getId() == 0 && Math.abs(objects[i].getX() - player.getX()) <= objects[i].getWidth() && tempVar == false) {
+				if (player.getY() > objects[i].getY()) {
+					tempVar = player.freefall(objects[i], 1);
 				}
 				else {
-					tempVar = player.freefall(objects[0][i], 2);
+					tempVar = player.freefall(objects[i], 2);
 				}
 				if (tempVar == false) {
 					player.setFalling();
 				}
-				else {
-					break;
-				}
 			}
-		}
-		
-		for (int j = 0; j < objects[1].length; j++) {
-			if (objects[1][j] != null && Math.abs(objects[1][j].getX() - player.getX()) <= 500) {
-				tempVar2 = player.hitWall(objects[1][j]);
-				if (tempVar2 == true) {
-					break;
-				}
+			else if (objects[i].getId() == 1 && Math.abs(objects[i].getX() - player.getX()) <= 500 && tempVar2 == false) {
+				tempVar2 = player.hitWall(objects[i]);
+			}
+			if (tempVar == true && tempVar2 == true) {
+				break;
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package sujoy_Code;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -39,6 +40,7 @@ public class Projectile {
 		}
 	}
 	public void render(Graphics2D g2d) {
+		g2d.drawString(x + "," + y, 200, 200);
 		if (collide == false) {
 			g2d.rotate(-angle, x + camera.getXOffset(), y);
 			g2d.drawImage(img, x + camera.getXOffset(), y, width, height, null);

@@ -13,6 +13,7 @@ public class Player_Gun extends Gun{
 		this.player = player;
 	}
 	public void render(Graphics2D g2d) {
+		g2d.drawString(player.getX() + "," + player.getY(), 10, 100);
 		if (x <= cursorX) {
 			g2d.rotate(-angle, x + camera.getXOffset(), y);
 			g2d.drawImage(img,x + camera.getXOffset(), y, width, height, null);
@@ -48,9 +49,9 @@ public class Player_Gun extends Gun{
 	}
 	public void fire() {
 		if (x <= cursorX)
-			bullets.add(new Projectile(x, y, 100, angle, 50,20,camera));
+			bullets.add(new Projectile(x, y, 2, angle, 50,20,camera));
 		else
-			bullets.add(new Projectile(x, y, -100, -angle, -50,20,camera));
+			bullets.add(new Projectile(x, y, -2, -angle, -50,20,camera));
 	}
 
 }
