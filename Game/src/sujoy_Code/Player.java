@@ -20,11 +20,13 @@ import sprites.SpriteSheet;
 import worlds.World;
 
 public class Player implements KeyListener{		//keyListener added in the Game Class
-	public static final int PLAYER_HEIGHT = 55;
-	public static final int PLAYER_WIDTH = 64;
-	public static int GRAVITY = 1;
+	public static final int PLAYER_HEIGHT = 39;
+	public static final int PLAYER_WIDTH = 35;
+	public static double GRAVITY = 683/960.0;
 	private int x;			//player x location
 	private int y;			// player y location
+	private int startX;
+	private int startY;
 	private int health;		//player's health
 	private int damage;			//how much damage the player does
 	private boolean falling;		
@@ -36,12 +38,14 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	private int walking;			//a int value to check to see if the player is moving left, right or not at all
 	private int frameCounter;		//a frameCounter to run moving right animation
 	private boolean[] keys;		//an array to see which keys have been pressed
-	private int yVel;		//the y velocity of the player
+	private double yVel;		//the y velocity of the player
 	private Camera camera;		//a camera object for movement
 	private World world;		//world object for the first world
 	private long timePressed;		//a long variable to check to see when 
 	private long now;
 	private Player_Gun gun;
+	private long timeDied;
+	private long respawn_timer;
 	
 	
 	/*
@@ -52,20 +56,22 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	public Player(SpriteSheet sheet, Camera camera, World world) {
 		this.world = world;
 		this.camera = camera;
-		this.gun = new Player_Gun(this.camera, ImageLoader.loadImage("/textures/laser_gun.png"),this,50, 24);
+		this.gun = new Player_Gun(this.camera, ImageLoader.loadImage("/textures/laser_gun.png"),this,36, 17);
 		falling = true;					//player didn't already jump
 		frameCounter = 0;				//set to 0 (first frame)
 		walking = 2;
 		walk = new BufferedImage[18];		//has a size of 18 because walking in each direction has 9 images each, so in total 18
 		this.tempImg = sheet;		
-		x = 0;		//player's starting x coordinate
-		y = 400;		//player's starting y coordinate
+		startX = 0;
+		startY = 525;
+		x = startX;		//player's starting x coordinate
+		y = startY;		//player's starting y coordinate
 		health = 100;	//health (subject to change)
 		damage = 20;		//initial damage (subject to change)
-		speed = 5;			//initial horizontal movement velocity
+		speed = 4;			//initaial horizontal movement velocity
 		keys = new boolean[5];
 		yVel = 0;
-		teleport_x = 300;
+		teleport_x = 213;
 		for (int j = 0; j < keys.length; j++)
 			keys[j] = false;
 		
@@ -76,6 +82,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		}
 		now = 0;
 		teleport_bar = 0;
+		respawn_timer = 0;
 	}
 	
 	/*
@@ -128,7 +135,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		case KeyEvent.VK_W:
 			//keys[0] = true;
 			if (falling == false) {		// if W was pressed, set jump to -10 (go up) and set jumped to true. Also get the last known y coordinate
-				yVel = -20;			//before jumping (temporary solution to jumping. Will be improved with collision detection later)
+				yVel = -15;			//before jumping (temporary solution to jumping. Will be improved with collision detection later)
 				falling = true;	//also it makes it so that the player doesn't keep going up while pressing w.
 			}
 			break;
@@ -142,14 +149,11 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			break;
 		case KeyEvent.VK_SPACE:
 			timePressed = System.currentTimeMillis();
-			if (timePressed - now >= 5000) {
+			if (timePressed - now >= 3000) {
 				keys[4] = true;
 				now = timePressed;
 				teleport_bar = 0;
 			}
-			break;
-		case KeyEvent.VK_V:
-			gun.fire();
 			break;
 		case KeyEvent.VK_P:
 			System.out.println("Position: " + x + ", " + y);
@@ -197,8 +201,8 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		if (keys[1] == true) {
 			if (keys[4] == true) {
 				x -= teleport_x;
-				if (tempX > (world.getWorldWidth() - Frame.WINDOW_WIDTH) && x <= 9260 ) {
-					x = 9261;
+				if (tempX > (world.getWorldWidth() - Frame.WINDOW_WIDTH) && x <= 6588 ) {
+					x = 6589;
 				}
 				keys[4] = false;
 			}
@@ -221,13 +225,30 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		else if (x + PLAYER_WIDTH > world.getWorldWidth()) {
 			x = world.getWorldWidth() - PLAYER_WIDTH;
 		}
+		if (y > world.getWorldHeight()) {
+			health = 0;
+			timeDied = System.currentTimeMillis();
+		}
 	}
 	public void tick() {
+		respawn_timer = System.currentTimeMillis();
 		teleport_bar = System.currentTimeMillis() - now;
-		if (teleport_bar > 5000) {
-			teleport_bar = 5000;
+		if (teleport_bar > 3000) {
+			teleport_bar = 3000;
 		}
-		movement();
+		if (health > 0) {
+			movement();
+		}
+		else {
+			if (respawn_timer - timeDied >= 3000) {
+				x = startX;
+				y = startY;
+				health = 100;
+				camera.setXOffset(0);
+				respawn_timer = 0;
+				
+			}
+		}
 		if (x >= (world.getWorldWidth() - Frame.WINDOW_WIDTH)) {
 			camera.setXOffset(-world.getWorldWidth() + Frame.WINDOW_WIDTH);
 		}
@@ -263,31 +284,34 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		
 		if (getBounds().intersects(tempRec) == true) {
 			if (type == 1) {
+				/*
 				if (x + PLAYER_WIDTH > tempRec.x && y < tempRec.y + tempRec.height - 10 && x + PLAYER_WIDTH < tempRec.x + tempRec.width/2) {
 					x = tempRec.x - PLAYER_WIDTH;
 				}
 				else if(x + PLAYER_WIDTH > tempRec.x + tempRec.width/2 && y < tempRec.y + tempRec.height - 10) {
 					x = tempRec.x + tempRec.width;
 				}
-				else {
+				else {*/
 					yVel = 2;
-				}
+					y = tempRec.y + tempRec.height;
+				//}
 				return false;
 			}
 			else {
+				/*
 				if (x + PLAYER_WIDTH > tempRec.x && y + PLAYER_HEIGHT > tempRec.y + 20 && x < tempRec.x + tempRec.width/2 && yVel < 20) {
 					x = tempRec.x - PLAYER_WIDTH;
 				}
 				else if(x > tempRec.x + tempRec.width/2 && y + PLAYER_HEIGHT > tempRec.y + 20 && yVel < 20) {
 					x = tempRec.x + tempRec.width;
 				}
-				else {
+				else {*/
 					falling = false;
 					yVel = 0;
 					//keys[0] = false;
 					y = tempRec.y - PLAYER_HEIGHT + 1;
 					return true;
-				}
+				//}
 			}
 		}
 		return false;
@@ -312,30 +336,38 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	 */
 	public void render(Graphics g) {
 		g.setColor(Color.blue);
-		g.fillRect(10, 50,(int)(teleport_bar/10),25);
+		g.fillRect(7, 36,(int)(teleport_bar/13),18);
 		g.setColor(Color.RED);
-		g.fillRect(10, 10,(int)(health * 5), 25);
+		g.fillRect(7, 7,(int)(health * 4), 18);
 		g.setColor(Color.black);
 		g.setFont(new Font("arial", Font.BOLD, 16));
-		g.drawString("Health: " + Integer.toString(health), 20, 28);
-		if (walking == 2) {			//if walking is 2 (moving right)
-			g.drawImage(walk[frameCounter], x + camera.getXOffset(), y + camera.getYOffset(), null);	//draw the sprite on the screen, based on which part of the walking animation is
-			
-			//currently playing
-			//frameCounter ++;
-			/*//increment frameCounter by 1
+		g.drawString("Health: " + Integer.toString(health), 14, 20);
+		if (health <= 0) {
+			g.setFont(new Font("arial", Font.BOLD, 72));
+			g.drawString("GAME OVER", Frame.WINDOW_WIDTH/2, Frame.WINDOW_HEIGHT/2 - 100);
+			frameCounter = 0;
+		}
+		else {
+			g.drawString(x + ", " + y, 10, 80);
+			if (walking == 2) {			//if walking is 2 (moving right)
+				g.drawImage(walk[frameCounter], x + camera.getXOffset(), y + camera.getYOffset(),PLAYER_WIDTH,PLAYER_HEIGHT, null);	//draw the sprite on the screen, based on which part of the walking animation is
+
+				//currently playing
+				//frameCounter ++;
+				/*//increment frameCounter by 1
 			if (frameCounter > 8) { //if frameCounter is greater than 8, reset it to 0 because there are only 9 images for walking animation
 				frameCounter = 0;
 			}*/
+			}
+			else if(walking == 1) {		//same as the one above, only except make sure frameCounter2 increments by 1 and adds 9 to get the second
+				//half of the BufferedImage array. The second half contains walking left images.
+				g.drawImage(walk[frameCounter + 9], x + camera.getXOffset(), y + camera.getYOffset(),PLAYER_WIDTH,PLAYER_HEIGHT, null);
+			}
+			frameCounter++;
+			if (frameCounter > 8) {
+				frameCounter = 0;
+			}
+			gun.render((Graphics2D) g);
 		}
-		else if(walking == 1) {		//same as the one above, only except make sure frameCounter2 increments by 1 and adds 9 to get the second
-									//half of the BufferedImage array. The second half contains walking left images.
-			g.drawImage(walk[frameCounter + 9], x + camera.getXOffset(), y + camera.getYOffset(), null);
-		}
-		frameCounter++;
-		if (frameCounter > 8) {
-			frameCounter = 0;
-		}
-		gun.render((Graphics2D) g);
 	}
 }

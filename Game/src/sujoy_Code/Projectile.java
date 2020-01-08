@@ -1,6 +1,5 @@
 package sujoy_Code;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -17,9 +16,11 @@ public class Projectile {
 	private double angle;
 	private BufferedImage img;
 	private boolean collide;
-	public Projectile(int x, int y, int vel, double angle, int width, int height, Camera cam) {
+	private int damage;
+	public Projectile(int x, int y, int vel, double angle, int width, int height, Camera cam, int dmg) {
 		camera = cam;
 		img = ImageLoader.loadImage("/textures/laser.png");
+		damage = dmg;
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -29,6 +30,9 @@ public class Projectile {
 		xVel = (int) (vel * Math.cos(-angle));
 		yVel = (int) (vel * Math.sin(-angle));
 		collide = false;
+	}
+	public int getDamage() {
+		return damage;
 	}
 	public void tick() {
 		if (collide == false) {
@@ -40,10 +44,10 @@ public class Projectile {
 		}
 	}
 	public void render(Graphics2D g2d) {
-		g2d.drawString(x + "," + y, 200, 200);
 		if (collide == false) {
 			g2d.rotate(-angle, x + camera.getXOffset(), y);
 			g2d.drawImage(img, x + camera.getXOffset(), y, width, height, null);
+			g2d.drawRect(x + camera.getXOffset(), y, width, height);
 			g2d.rotate(angle, x + camera.getXOffset(), y);
 		}
 	}

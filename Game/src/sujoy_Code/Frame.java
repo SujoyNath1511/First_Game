@@ -13,8 +13,8 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")		//Blocks the serializable warning
 public class Frame extends JFrame{
-	public static final int WINDOW_HEIGHT = 1080;	
-	public static final int WINDOW_WIDTH = 1920;
+	public static final int WINDOW_HEIGHT = 768;	
+	public static final int WINDOW_WIDTH = 1366;
 	private Canvas canvas;		//create a canvas object
 	private Cursor cursor;
 	private BufferedImage crosshair;
@@ -39,7 +39,7 @@ public class Frame extends JFrame{
 		canvas.setMaximumSize(new Dimension(WINDOW_WIDTH,WINDOW_HEIGHT));
 		canvas.setMinimumSize(new Dimension(WINDOW_WIDTH,WINDOW_HEIGHT));
 		canvas.setFocusable(false);		//turns the focus away from canvas and onto the Jframe (required for keyListener)
-		canvas.setBackground(Color.CYAN);
+		canvas.setBackground(Color.lightGray);
 		this.add(canvas); //add canvas component to the window
 		
 		crosshair = ImageLoader.loadImage("/textures/cursor.png");

@@ -23,6 +23,8 @@ public class Game implements Runnable{		//runnable lets me use threads
 	private Handler handler;
 	private Camera camera;
 	private World world1;
+	private MouseManager mouseManager;
+	public MenuState menuState;
 	
 	public Game() {
 		isRunning = false;	//this boolean value is to check to see if the game is already running or not. At the beginning, we set it to false
@@ -38,9 +40,14 @@ public class Game implements Runnable{		//runnable lets me use threads
 		sheet = new SpriteSheet(ImageLoader.loadImage("/textures/skeleton.png"));	//use image loader to get a sprite sheet and put it into sheet
 		world1 = new World(camera, "resources/levels/world_1.txt");
 		player = new Player(sheet, camera, world1);
-		window.getFrame().addKeyListener(player);		//add a keylistener to player
-		//window.getFrame().addMouseListener(player.getGun());
+		window.getFrame().addKeyListener(player);//add a keylistener to player
+		world1.generateEnemies(player, sheet);
 		handler = new Handler(camera, world1, player);
+		mouseManager = new MouseManager(player.getGun());
+		window.getCanvas().addMouseListener(mouseManager);
+		menuState = new MenuState(window);
+		//State.setState(menuState);
+		
 	}
 	
 	/*
@@ -48,8 +55,14 @@ public class Game implements Runnable{		//runnable lets me use threads
 	 * post: updated player location
 	 * Description: This method is supposed to update all conditions (object location, player health etc.). Currently only updates player location
 	 */
-	public void tick() {		//this method updates all the values of objects on the screen.
-		handler.tick();
+	public void tick() {//this method updates all the values of objects on the screen.
+		/*if (menuState.isState() == true) {
+			menuState.tick();
+			
+		}
+		else {*/
+			handler.tick();
+		//}
 	}
 	/*
 	 * pre: tick has ran once
@@ -65,9 +78,12 @@ public class Game implements Runnable{		//runnable lets me use threads
 		g = buffer.getDrawGraphics();
 		
 		g.clearRect(0, 0, Frame.WINDOW_WIDTH, Frame.WINDOW_HEIGHT);	//clears the screen (makes a clear rectangle the size of the screen)
-		
-		handler.render(g);
-		
+		//if (menuState.isState() == true)
+		//	menuState.render(g);
+		//else {
+			handler.render(g);
+			
+		//}//close the graphics object (get reinitialized each loop so having the previous open would create problems.)
 		buffer.show();			//show the object on the window (same as repaint)
 		g.dispose();			//close the graphics object (get reinitialized each loop so having the previous open would create problems.)
 	}
@@ -91,13 +107,13 @@ public class Game implements Runnable{		//runnable lets me use threads
 			timer += (now - time);	//subtract the time taken to reach this line of code(used to check when we reach 1/60 of a second)
 			timer_checker += now - time;		//keep track of that time
 			time = now;			//reset time to current time (this process is in nanoseconds so it doesn't matter too much)
-			tick();
-			render();
+			//tick();
 			if (timer >= tickRate) {		//if we passed 1/60 of a second, run tick and render
-				
+				tick();
 				ticks ++;	//add 1 to number of ticks
 				timer -= tickRate;	//reset timer to 1 less than current (resetting it to 0 causes problems due to other code running)
 			}
+			render();
 			if (timer_checker >= 1000000000) {	//print fps every second
 				System.out.println("FPS: " + ticks); 
 				timer_checker = 0;
@@ -138,6 +154,9 @@ public class Game implements Runnable{		//runnable lets me use threads
 		} catch (InterruptedException e) {	//must be in a try and catch to work
 			e.printStackTrace();
 		}
+	}
+	public  MouseManager getMouseManager() {
+		return mouseManager;
 	}
 
 }

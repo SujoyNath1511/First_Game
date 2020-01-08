@@ -10,28 +10,21 @@ import sujoy_Code.ImageLoader;
 
 public class Foreground_Object extends Entities {
 	private Camera camera;
-	private int id;
 	public static final Color[] COLOR_ARRAY = {Color.GREEN, Color.BLACK, Color.YELLOW, Color.RED, Color.ORANGE};
-	private static BufferedImage[] textures = {ImageLoader.loadImage("/textures/stone.png")};
-	public Foreground_Object(boolean interactable, int x, int y, int width, int height, Camera camera, int id) {
-		super(interactable, x, y, width, height);
+	private static BufferedImage[] textures = {ImageLoader.loadImage("/textures/stone.png"),ImageLoader.loadImage("/textures/floor.png")};
+	public Foreground_Object(int x, int y, int width, int height, Camera camera, int id) {
+		super(true, x, y, width, height, id);
 		this.camera = camera;
-		this.id = id;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	@Override
 	public void render(Graphics g) {
 		g.setColor(COLOR_ARRAY[id]);
 		if (id == 0) {
-			g.drawImage(textures[0].getSubimage(0, 0, width, height),x + camera.getXOffset(), y,null);
+			if (width > 747 || height > 178)
+				g.drawImage(textures[0].getSubimage(0, 0,width, height),x + camera.getXOffset(), y,null);
+			else
+				g.drawImage(textures[1].getSubimage(0, 0, width, height),x + camera.getXOffset(), y,null);
 		}
 		else
 			g.fillRect(x + camera.getXOffset(), y + camera.getYOffset(), width, height);
