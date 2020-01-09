@@ -47,7 +47,7 @@ public class Projectile {
 		if (collide == false) {
 			g2d.rotate(-angle, x + camera.getXOffset(), y);
 			g2d.drawImage(img, x + camera.getXOffset(), y, width, height, null);
-			g2d.drawRect(x + camera.getXOffset(), y, width, height);
+			//g2d.drawRect(x + camera.getXOffset(), y, width, height);
 			g2d.rotate(angle, x + camera.getXOffset(), y);
 		}
 	}

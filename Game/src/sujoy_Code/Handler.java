@@ -62,6 +62,11 @@ public class Handler {
 			else if (objects[i].getId() == 1 && Math.abs(objects[i].getX() - player.getX()) <= 500 && tempVars[3] == false) {
 				tempVars[3] = player.hitWall(objects[i]);
 			}
+			else if (objects[i].getId() == 2 && Math.abs(player.getX() - objects[i].getX()) <= 200) {
+				if (objects[i].getBounds().intersects(player.getBounds()) == true) {
+					player.setSpawn();
+				}
+			}
 			if (tempVars[3] == true && tempVars[2] == true) {
 				break;
 			}
@@ -94,5 +99,6 @@ public class Handler {
 			projectiles.get(index).render((Graphics2D) g);
 		}
 		player.render(g);
+		
 	}
 }

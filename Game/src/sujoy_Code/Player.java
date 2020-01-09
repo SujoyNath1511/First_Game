@@ -20,8 +20,8 @@ import sprites.SpriteSheet;
 import worlds.World;
 
 public class Player implements KeyListener{		//keyListener added in the Game Class
-	public static final int PLAYER_HEIGHT = 39;
-	public static final int PLAYER_WIDTH = 35;
+	public static final int PLAYER_HEIGHT = 50;
+	public static final int PLAYER_WIDTH = 28;
 	public static double GRAVITY = 683/960.0;
 	private int x;			//player x location
 	private int y;			// player y location
@@ -34,7 +34,8 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	private int teleport_x;			//teleport distance in the x (needs more work)
 	private long teleport_bar;			//A variable that checks the current time with when the space bar has been last pressed.	
 	private BufferedImage[] walk;	//array for when the skeleton moves (animation)
-	private SpriteSheet tempImg;	//temporary storage of the full spritesheet (a spritesheet object)
+	//private SpriteSheet tempImg;	//temporary storage of the full spritesheet (a spritesheet object)
+	private BufferedImage tempImg;
 	private int walking;			//a int value to check to see if the player is moving left, right or not at all
 	private int frameCounter;		//a frameCounter to run moving right animation
 	private boolean[] keys;		//an array to see which keys have been pressed
@@ -46,8 +47,8 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	private Player_Gun gun;
 	private long timeDied;
 	private long respawn_timer;
-	
-	
+
+
 	/*
 	 * pre:none
 	 * post: Almost all variables have been initialized
@@ -61,7 +62,8 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		frameCounter = 0;				//set to 0 (first frame)
 		walking = 2;
 		walk = new BufferedImage[18];		//has a size of 18 because walking in each direction has 9 images each, so in total 18
-		this.tempImg = sheet;		
+		//this.tempImg = sheet;		
+		tempImg = ImageLoader.loadImage("/animationSheets/player_walk.png");
 		startX = 0;
 		startY = 525;
 		x = startX;		//player's starting x coordinate
@@ -74,17 +76,17 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		teleport_x = 213;
 		for (int j = 0; j < keys.length; j++)
 			keys[j] = false;
-		
+
 		//underneath, I get all the images I need for the walking animation using the crop method from SpriteSheets
 		for (int i = 0; i < 9; i++) {
-			walk[i] = tempImg.crop(i * 64, 11 * 64, 64, 64);
-			walk[i + 9] = tempImg.crop(i * 64, 9 * 64, 64, 64);
+			walk[i] = tempImg.getSubimage(i * PLAYER_WIDTH,50, PLAYER_WIDTH, PLAYER_HEIGHT);
+			walk[i + 9] = tempImg.getSubimage(i * PLAYER_WIDTH,0, PLAYER_WIDTH, PLAYER_HEIGHT);
 		}
 		now = 0;
 		teleport_bar = 0;
 		respawn_timer = 0;
 	}
-	
+
 	/*
 	 * pre: health has been initialized
 	 * post: returns health
@@ -159,9 +161,9 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			System.out.println("Position: " + x + ", " + y);
 			break;
 		}
-		
+
 	}
-	
+
 	/*
 	 * pre: A key has been pressed
 	 * post: Sets speed to 0 after A or D have been released
@@ -179,7 +181,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		else if (key == KeyEvent.VK_SPACE) {
 			keys[4] = false;
 		}
-		
+
 	}
 	public Player_Gun getGun() {
 		return gun;
@@ -246,7 +248,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 				health = 100;
 				camera.setXOffset(0);
 				respawn_timer = 0;
-				
+
 			}
 		}
 		if (x >= (world.getWorldWidth() - Frame.WINDOW_WIDTH)) {
@@ -276,42 +278,23 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	public void setFalling() {
 		falling = true;
 	}
-	public void setSpeed(int speed) {
-		this.speed = speed;
-	}
+
 	public boolean freefall(Foreground_Object tempObj, int type) {
 		Rectangle tempRec = tempObj.getBounds();
-		
+
 		if (getBounds().intersects(tempRec) == true) {
 			if (type == 1) {
-				/*
-				if (x + PLAYER_WIDTH > tempRec.x && y < tempRec.y + tempRec.height - 10 && x + PLAYER_WIDTH < tempRec.x + tempRec.width/2) {
-					x = tempRec.x - PLAYER_WIDTH;
-				}
-				else if(x + PLAYER_WIDTH > tempRec.x + tempRec.width/2 && y < tempRec.y + tempRec.height - 10) {
-					x = tempRec.x + tempRec.width;
-				}
-				else {*/
-					yVel = 2;
-					y = tempRec.y + tempRec.height;
-				//}
+				yVel = 2;
+				y = tempRec.y + tempRec.height;
 				return false;
 			}
 			else {
-				/*
-				if (x + PLAYER_WIDTH > tempRec.x && y + PLAYER_HEIGHT > tempRec.y + 20 && x < tempRec.x + tempRec.width/2 && yVel < 20) {
-					x = tempRec.x - PLAYER_WIDTH;
-				}
-				else if(x > tempRec.x + tempRec.width/2 && y + PLAYER_HEIGHT > tempRec.y + 20 && yVel < 20) {
-					x = tempRec.x + tempRec.width;
-				}
-				else {*/
-					falling = false;
-					yVel = 0;
-					//keys[0] = false;
-					y = tempRec.y - PLAYER_HEIGHT + 1;
-					return true;
-				//}
+
+				falling = false;
+				yVel = 0;
+				//keys[0] = false;
+				y = tempRec.y - PLAYER_HEIGHT + 1;
+				return true;
 			}
 		}
 		return false;
@@ -328,6 +311,10 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			return true;
 		}
 		return false;
+	}
+	public void setSpawn() {
+		startX = x;
+		startY = y;
 	}
 	/*
 	 * pre: walking and frameCounter have been initialized
@@ -350,14 +337,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 		else {
 			g.drawString(x + ", " + y, 10, 80);
 			if (walking == 2) {			//if walking is 2 (moving right)
-				g.drawImage(walk[frameCounter], x + camera.getXOffset(), y + camera.getYOffset(),PLAYER_WIDTH,PLAYER_HEIGHT, null);	//draw the sprite on the screen, based on which part of the walking animation is
-
-				//currently playing
-				//frameCounter ++;
-				/*//increment frameCounter by 1
-			if (frameCounter > 8) { //if frameCounter is greater than 8, reset it to 0 because there are only 9 images for walking animation
-				frameCounter = 0;
-			}*/
+				g.drawImage(walk[frameCounter], x + camera.getXOffset(), y + camera.getYOffset(),PLAYER_WIDTH,PLAYER_HEIGHT, null);	//draw the sprite on the screen, based on which part of the walking animation is currently playing
 			}
 			else if(walking == 1) {		//same as the one above, only except make sure frameCounter2 increments by 1 and adds 9 to get the second
 				//half of the BufferedImage array. The second half contains walking left images.

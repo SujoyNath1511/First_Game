@@ -26,7 +26,6 @@ public class Enemy_Stats {
 	private int freezeDistance = 150 , detectDistance = 250;
 	private Player player;
 	private Camera camera;
-	private BufferedImage img;
 	private BufferedImage [] skeleton;
 	private SpriteSheet tempImg;
 	private int walking;
@@ -51,7 +50,6 @@ public class Enemy_Stats {
 			skeleton[i] = tempImg.crop(i * 64, 11 * 64, 64, 64);
 			skeleton[i + 9] = tempImg.crop(i * 64, 9 * 64, 64, 64);
 		}
-		img = ImageLoader.loadImage("/textures/skeleton_walk.png");
 		
 					
 	}

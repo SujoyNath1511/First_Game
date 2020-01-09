@@ -82,6 +82,7 @@ public class Game implements Runnable{		//runnable lets me use threads
 		//	menuState.render(g);
 		//else {
 			handler.render(g);
+			g.fillRect(7650 + camera.getXOffset(), 370, 200, 180);
 			
 		//}//close the graphics object (get reinitialized each loop so having the previous open would create problems.)
 		buffer.show();			//show the object on the window (same as repaint)
