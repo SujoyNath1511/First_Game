@@ -14,6 +14,7 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import entities_and_objects.Foreground_Object;
 import sprites.SpriteSheet;
@@ -110,6 +111,14 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 	 */
 	public int getY() {
 		return y;
+	}
+	public void bullet_collision(ArrayList <Projectile> projectiles) {
+		for (int i = 0; i < projectiles.size(); i++) {
+			if (projectiles.get(i).getType() == 2)
+				if (projectiles.get(i).collisionDetection(getBounds()) == true) {
+					health -= projectiles.get(i).getDamage();
+				}
+		}
 	}
 	/*
 	 * pre: damage has been initialized
@@ -242,7 +251,7 @@ public class Player implements KeyListener{		//keyListener added in the Game Cla
 			movement();
 		}
 		else {
-			if (respawn_timer - timeDied >= 3000) {
+			if (respawn_timer - timeDied >= 5000) {
 				x = startX;
 				y = startY;
 				health = 100;

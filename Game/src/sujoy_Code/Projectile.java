@@ -17,7 +17,9 @@ public class Projectile {
 	private BufferedImage img;
 	private boolean collide;
 	private int damage;
-	public Projectile(int x, int y, int vel, double angle, int width, int height, Camera cam, int dmg) {
+	private int type;
+	
+	public Projectile(int x, int y, int vel, double angle, int width, int height, Camera cam, int dmg, int type) {
 		camera = cam;
 		img = ImageLoader.loadImage("/textures/laser.png");
 		damage = dmg;
@@ -30,6 +32,7 @@ public class Projectile {
 		xVel = (int) (vel * Math.cos(-angle));
 		yVel = (int) (vel * Math.sin(-angle));
 		collide = false;
+		this.type = type;
 	}
 	public int getDamage() {
 		return damage;
@@ -47,7 +50,6 @@ public class Projectile {
 		if (collide == false) {
 			g2d.rotate(-angle, x + camera.getXOffset(), y);
 			g2d.drawImage(img, x + camera.getXOffset(), y, width, height, null);
-			//g2d.drawRect(x + camera.getXOffset(), y, width, height);
 			g2d.rotate(angle, x + camera.getXOffset(), y);
 		}
 	}
@@ -110,5 +112,11 @@ public class Projectile {
 	}
 	public boolean getCollide() {
 		return collide;
+	}
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
 	}
 }

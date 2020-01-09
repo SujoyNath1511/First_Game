@@ -51,9 +51,9 @@ public class Player_Gun extends Gun{
 	}
 	public void fire() {
 		if (x <= cursorX)
-			bullets.add(new Projectile(x + 8, y, 28, angle, 36,14,camera, 30));
+			bullets.add(new Projectile(x + 8, y, 28, angle, 36,14,camera, 30, 1));
 		else
-			bullets.add(new Projectile(x + 17, y, -28, -angle, -36,14,camera, 30));
+			bullets.add(new Projectile(x + 17, y, -28, -angle, -36,14,camera, 30, 1));
 	}
 
 }

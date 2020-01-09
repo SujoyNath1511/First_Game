@@ -44,8 +44,10 @@ public class Game implements Runnable{		//runnable lets me use threads
 		world1.generateEnemies(player, sheet);
 		handler = new Handler(camera, world1, player);
 		mouseManager = new MouseManager(player.getGun());
+		menuState = new MenuState(window, mouseManager);
+		mouseManager.setMenu(menuState);
 		window.getCanvas().addMouseListener(mouseManager);
-		menuState = new MenuState(window);
+
 		//State.setState(menuState);
 		
 	}
@@ -56,13 +58,14 @@ public class Game implements Runnable{		//runnable lets me use threads
 	 * Description: This method is supposed to update all conditions (object location, player health etc.). Currently only updates player location
 	 */
 	public void tick() {//this method updates all the values of objects on the screen.
-		/*if (menuState.isState() == true) {
+		if (menuState.isState() == 0 || menuState.isState() == 2) {
 			menuState.tick();
 			
 		}
-		else {*/
-			handler.tick();
-		//}
+		else {
+			if(menuState.isState() == 1)
+				handler.tick();
+		}
 	}
 	/*
 	 * pre: tick has ran once
@@ -78,15 +81,15 @@ public class Game implements Runnable{		//runnable lets me use threads
 		g = buffer.getDrawGraphics();
 		
 		g.clearRect(0, 0, Frame.WINDOW_WIDTH, Frame.WINDOW_HEIGHT);	//clears the screen (makes a clear rectangle the size of the screen)
-		//if (menuState.isState() == true)
-		//	menuState.render(g);
-		//else {
-			handler.render(g);
-			g.fillRect(7650 + camera.getXOffset(), 370, 200, 180);
+		if (menuState.isState() == 0)
+			menuState.render(g);
+		else {
+			if(menuState.isState() ==1)
+				handler.render(g);
 			
-		//}//close the graphics object (get reinitialized each loop so having the previous open would create problems.)
+		}//close the graphics object (get reinitialized each loop so having the previous open would create problems.)
 		buffer.show();			//show the object on the window (same as repaint)
-		g.dispose();			//close the graphics object (get reinitialized each loop so having the previous open would create problems.)
+		g.dispose();
 	}
 	/*
 	 * pre: Thread has started

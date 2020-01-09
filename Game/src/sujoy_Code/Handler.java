@@ -38,6 +38,7 @@ public class Handler {
 		}
 		world1.tick(projectiles);
 		player.tick();
+		player.bullet_collision(projectiles);
 		for (int index = 0; index < projectiles.size(); index ++) {
 			projectiles.get(index).tick();
 			if (projectiles.get(index).getCollide() == true) {
