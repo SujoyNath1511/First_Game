@@ -3,8 +3,8 @@ package entities_and_objects;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-import sujoy_Code.Camera;
-import sujoy_Code.ImageLoader;
+import main_game_code.Camera;
+import main_game_code.ImageLoader;
 
 public class Background_Object extends Entities{
 	private Camera camera;

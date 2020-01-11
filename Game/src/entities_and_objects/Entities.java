@@ -1,6 +1,7 @@
 package entities_and_objects;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public abstract class Entities {
 	protected boolean interactable;

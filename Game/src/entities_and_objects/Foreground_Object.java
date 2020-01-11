@@ -5,8 +5,8 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import sujoy_Code.Camera;
-import sujoy_Code.ImageLoader;
+import main_game_code.Camera;
+import main_game_code.ImageLoader;
 
 public class Foreground_Object extends Entities {
 	private Camera camera;
